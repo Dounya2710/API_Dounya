@@ -1,0 +1,18 @@
+action_id,opsys_contract_id,title,programme_id,start_date,end_date,total_budget_eur,biodiversity_flag,green_economy_flag,governance_flag,activity_id
+1,,Bénoué,,2022-12-16,2030-07-11,3.00,,,
+2,,Gashaka-Gumti,,2024-07-22,2028-07-22,1.50,,,
+"3,,""CaSeVe conservation"",,2022-12-22,2027-12-21,7.75,,,"
+"4,,""CaSeVe agro-pasotralism"",,2023-06-17,2027-12-16,7.75,,,"
+"5,,""CaSeVe governance"",,2023-06-29,2028-06-28,4.00,,,"
+6,,ECONORCAM,,2021-01-01,2024-12-31,5.32,,,
+7,,RESINOC,,2020-09-24,2024-09-23,2.50,,,
+8,,INNOVAC,,2021-12-24,2025-12-23,4.15,,,
+9,,ABC-PADER,,2020-02-03,2025-02-03,9.50,,,
+10,,BSB-Yamoussa,,,,11.00,,,
+11,,Borderlands,,2024-09-01,2027-12-31,31.50,,,
+12,,PAIRIAC,,,,27.00,,,
+13,,PRADEP,,,,,,,
+"14,,""ABC - SODECOTON"",,,,15.50,,,"
+15,,RealGNRS,,,,,,,
+16,,PROFEC,,2023-01-01,2024-12-01,,,,
+17,,ECHO,,,,,,,

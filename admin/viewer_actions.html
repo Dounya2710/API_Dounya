@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KLCD Viewer — Actions</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 20px; }
+    input { padding: 8px; width: 320px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { position: sticky; top: 0; background: #f7f7f7; }
+    .muted { color: #666; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h2>KLCD Viewer — Actions</h2>
+  <div class="muted">Source: <code>/actions.php</code></div>
+
+  <p>
+    <input id="q" placeholder="Rechercher dans le titre..." />
+    <button id="refresh">Rafraîchir</button>
+    <span id="count" class="muted"></span>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID Action</th>
+        <th>Titre</th>
+        <th>Date début</th>
+        <th>Date fin</th>
+        <th>Budget total (M€)</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <script>
+    const API_URL = "http://localhost:8000/admin/action.php";
+    let allRows = [];
+
+    function render(rows) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      for (const r of rows) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.action_id ?? ""}</td><td>${escapeHtml(r.title ?? "")}</td><td>${escapeHtml(r.start_date ?? "")}</td><td>${escapeHtml(r.end_date ?? "")}</td><td>${escapeHtml(r.total_budget_eur ?? "")}</td>`;
+        tbody.appendChild(tr);
+      }
+      document.getElementById("count").textContent = `— ${rows.length} actions affichées`;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function load() {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      allRows = await res.json();
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const q = document.getElementById("q").value.toLowerCase().trim();
+      const rows = q
+        ? allRows.filter(r => (r.title || "").toLowerCase().includes(q))
+        : allRows;
+      render(rows);
+    }
+
+    document.getElementById("q").addEventListener("input", applyFilter);
+    document.getElementById("refresh").addEventListener("click", load);
+
+    load().catch(err => {
+      alert("Erreur API: " + err.message + "\nVérifie que le serveur PHP tourne et que /action.php répond.");
+    });
+  </script>
+
+  <div style="margin: 15px 0;">
+    <a href="/admin/viewer_audit.html">
+        <button style="padding: 8px 14px; cursor: pointer;"> Voir l’historique des modifications </button>
+    </a>
+</div>
+
+</body>
+</html>

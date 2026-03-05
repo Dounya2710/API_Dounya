@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>KLCD Viewer — Audit log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f8f9fa;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        pre {
+            max-width: 400px;
+            max-height: 200px;
+            overflow: auto;
+            background: #eee;
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        .op-INSERT { color: green; font-weight: bold; }
+        .op-UPDATE { color: orange; font-weight: bold; }
+        .op-DELETE { color: red; font-weight: bold; }
+
+        a {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Historique des modifications (Audit log)</h1>
+
+<a href="viewer_actions.html">⬅ Retour aux actions</a>
+
+<table id="auditTable">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Table</th>
+            <th>Opération</th>
+            <th>Utilisateur</th>
+            <th>Ancienne valeur</th>
+            <th>Nouvelle valeur</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+fetch('/admin/audit_log.php')
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.querySelector('#auditTable tbody');
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td>${row.changed_at}</td>
+                <td>${row.table_name}</td>
+                <td class="op-${row.op}">${row.op}</td>
+                <td>${row.changed_by ?? ''}</td>
+                <td><pre>${row.old_row ? JSON.stringify(row.old_row, null, 2) : ''}</pre></td>
+                <td><pre>${row.new_row ? JSON.stringify(row.new_row, null, 2) : ''}</pre></td>
+            `;
+
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(err => {
+        alert('Erreur lors du chargement de l’audit');
+        console.error(err);
+    });
+</script>
+
+</body>
+</html>

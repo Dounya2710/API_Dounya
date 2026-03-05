@@ -1,0 +1,34 @@
+La base de données KLCD repose sur un modèle fortement relationnel, structuré autour de la table centrale KLCD, qui 
+représente les unités territoriales définies par la Commission européenne dans le cadre du Knowledge for Local Climate 
+and Development. Cette table constitue l’élément pivot du schéma : elle est reliée à des informations géographiques, 
+environnementales et programmatiques à travers une série de tables associatives qui permettent de représenter la 
+complexité des interactions entre les territoires, les zones protégées et les investissements européens. La table 
+Location modélise la décomposition administrative (ISO, niveaux d’administration, codes et noms), offrant un ancrage 
+géospatial fin. La relation KLCD_Location introduit la notion de share_pct, indispensable pour exprimer la part d’un 
+territoire KLCD qui recouvre une localisation administrative donnée, permettant ainsi de représenter des recouvrements 
+partiels. La table ProtectedArea, liée aux classifications IUCN et aux métriques de surface, permet d’intégrer des données 
+issues du WDPA, elle est reliée aux unités KLCD via ProtectedArea_KLCD, ce qui permet d’estimer la proportion d’une aire 
+protégée se trouvant à l’intérieur d’un KLCD.
+
+Sur l’axe programmatique, les tables EU_Programme, Action et leurs tables associatives (Action_KLCD, Action_ProtectedArea, 
+Action_Location) font le lien entre les financements européens, les actions concrètes réalisées sur les territoires et les 
+zones où elles s’appliquent. Chaque action peut être rattachée à plusieurs KLCD, plusieurs zones protégées et plusieurs 
+niveaux administratifs, reflétant la nature multi-territoriale des projets européens. Les tables Institution, Action_Implementer 
+et Action_MS_Funding permettent de documenter respectivement les implémenteurs, les États membres contributeurs et la répartition 
+financière du budget, ajoutant une dimension organisationnelle et budgétaire granulaire. Enfin, la dimension thématique est assurée 
+par le couple ActivitySector / Activity, associé aux actions via Action_Activity, permettant de classifier les interventions selon 
+des piliers (biodiversité, économie verte, gouvernance…) et des secteurs détaillés.
+
+Dans l’ensemble, la BDD KLCD adopte une structure parfaitement normalisée (3NF), avec des clés primaires simples, des clés étrangères 
+explicites, et des tables associatives nombreuses nécessaires pour modéliser des relations many-to-many omniprésentes. Le modèle est 
+cohérent, extensible, et suffisamment riche pour supporter des analyses territoriales, financières, thématiques et environnementales 
+complexes. Il permet notamment de croiser facilement :
+
+— des territoires KLCD
+— des zones protégées
+— des financements européens
+— des acteurs institutionnels
+— des activités thématiques.
+
+Ce type d’architecture est typique des entrepôts de données multi-sources utilisés dans les projets européens, et fournit une base 
+solide pour construire des tableaux de bord analytiques ou des API d’exposition structurée des données KLCD.

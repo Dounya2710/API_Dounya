@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <title>Viewer table</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:0}
+    .wrap{padding:18px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input{padding:6px 8px;min-width:320px}
+    button,a.btn{padding:6px 10px;border:1px solid #ccc;border-radius:8px;background:#f7f7f7;cursor:pointer;text-decoration:none;color:#111}
+    .muted{color:#666}
+    table{border-collapse:collapse;width:100%;margin-top:12px;font-size:13px}
+    th,td{border:1px solid #e3e3e3;padding:6px 8px;vertical-align:top}
+    th{background:#fafafa;position:sticky;top:0}
+    .err{color:#b00020;margin-left:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2 id="title">Table</h2>
+
+    <div class="row">
+      <input id="q" placeholder="Filtrer (client)..." />
+      <button id="refresh">Rafraîchir</button>
+      <a class="btn" id="exportCsv" href="#">Export CSV</a>
+      <a class="btn" id="viewJson" href="#" target="_blank">Voir JSON</a>
+      <span class="muted" id="meta"></span>
+      <span class="err" id="err"></span>
+    </div>
+
+    <div style="overflow:auto; max-height:72vh">
+      <table id="tbl"></table>
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const table = params.get('table') || 'KLCD';
+
+  const titleEl = document.getElementById('title');
+  const metaEl  = document.getElementById('meta');
+  const errEl   = document.getElementById('err');
+  const qEl     = document.getElementById('q');
+  const tblEl   = document.getElementById('tbl');
+
+  titleEl.textContent = `Table: ${table}`;
+
+  function apiUrl() {
+    const q = qEl.value.trim();
+    const u = new URL(`/api/tables.php`, location.origin);
+    u.searchParams.set('table', table);
+    u.searchParams.set('limit', '200');
+    u.searchParams.set('offset', '0');
+    if (q) u.searchParams.set('q', q);
+    return u.toString();
+  }
+
+  document.getElementById('exportCsv').href = `/admin/export_table.php?table=${encodeURIComponent(table)}`;
+  document.getElementById('viewJson').href  = apiUrl();
+
+  async function load() {
+    errEl.textContent = '';
+    metaEl.textContent = 'Chargement...';
+    tblEl.innerHTML = '';
+
+    const res = await fetch(apiUrl(), { credentials: 'same-origin' });
+    const text = await res.text();
+
+    // Debug ultra utile : si ce n'est pas du JSON, on l'affiche
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      errEl.textContent = 'Réponse non-JSON (souvent 404/login). Voir console.';
+      console.error('NON JSON RESPONSE:', text);
+      metaEl.textContent = '';
+      return;
+    }
+
+    if (!res.ok || data.error) {
+      errEl.textContent = data.error || `HTTP ${res.status}`;
+      metaEl.textContent = '';
+      return;
+    }
+
+    const cols = data.columns || [];
+    const rows = data.rows || [];
+
+    metaEl.textContent = `${rows.length} lignes affichées / total ${data.total}`;
+
+    // header
+    const thead = document.createElement('thead');
+    const trh = document.createElement('tr');
+    cols.forEach(c => {
+      const th = document.createElement('th');
+      th.textContent = c;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+    tblEl.appendChild(thead);
+
+    // body
+    const tbody = document.createElement('tbody');
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const td = document.createElement('td');
+        const v = r[c];
+        td.textContent = (v === null || v === undefined) ? '' : String(v);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    tblEl.appendChild(tbody);
+  }
+
+  document.getElementById('refresh').addEventListener('click', load);
+  qEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') load(); });
+
+  load();
+</script>
+</body>
+</html>
