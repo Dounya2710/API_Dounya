@@ -1,9 +1,10 @@
 <?php
-    require_once __DIR__ . '/../auth.php';
-    require_login();
+  require_once __DIR__ . '/../auth.php';
+  require_once __DIR__ . '/../lang.php';
+  require_login();
 ?>
 <!doctype html>
-<html lang="fr">
+<html lang="<?= htmlspecialchars($lang) ?>">
 <head>
   <meta charset="utf-8">
   <title><?= htmlspecialchars($title ?? 'KLCD Viewer') ?></title>

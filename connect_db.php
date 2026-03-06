@@ -24,7 +24,7 @@
         $dbPort = get_env('DB_PORT', '5432');
         $dbName = get_env('DB_NAME', 'naturafrica');
         $dbUser = get_env('DB_USER', 'postgres');
-        $dbPass = get_env('DB_PASS', 'visioterra');
+        $dbPass = get_env('DB_PASS', '');
 
         $dsn = "pgsql:host=$dbHost;port=$dbPort;dbname=$dbName";
 

@@ -3,6 +3,7 @@
 
     require __DIR__ . '/connect_db.php';
     require __DIR__ . '/auth.php';
+	require __DIR__ . '/lang.php';
     require_login();
 ?>
 
